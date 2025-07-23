@@ -1,0 +1,27 @@
+@startuml
+!include ./C4_Component.puml
+
+title Component diagram for SmartHome System - Device Registry Service
+
+Container(spa, "Single-Page Application", "React, TypeScript", "Интерфейс управления системой\n• Визуализация данных\n• Управление устройствами\n• Настройка сценариев")
+
+ContainerDb(database, "Database", "PostgreSQL", "Хранит: \n- Пользовательские данные \n- Состояние устройств \n- Исторические данные датчиков \n- Конфигурации автоматизаций\n- Логи")
+
+Container_Boundary(DeviceRegistry, "Регистрация новых устройств") {
+    Component(registration_api, "Registration API", "", "• REST endpoints\n• Обработка ошибок")
+
+    Component(registration_processing, "Registration Processing", "", "Логика регистрации")
+
+    Component(validation, "Validation Engine", "", "Проверка формата данных")
+
+    Component(logger, "Audit Logger", "", "Журналирование действий")
+}
+
+Rel(spa, registration_api, "Вызывает API", "HTTPS/REST JSON")
+Rel(registration_api, registration_processing, "Обрабатывает запрос", "Method call")
+Rel(registration_processing, validation, "Проверяет данные", "")
+Rel(registration_processing, database, "Записывает данные", "SQL")
+Rel(registration_processing, logger, "Логирует события", "REST")
+Rel(logger, database, "Записывает события", "SQL")
+
+@enduml

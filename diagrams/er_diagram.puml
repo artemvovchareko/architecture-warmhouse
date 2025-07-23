@@ -1,0 +1,83 @@
+@startuml ER-диаграмма WarmHouse
+
+' Сущности
+entity "User" as user {
+  *id : integer <<PK>>
+  --
+  *username : varchar(50)
+  *isAdmin : boolean
+  password_hash : varchar(255)
+  created_at : timestamp
+}
+
+entity "House" as house {
+  *id : integer <<PK>>
+  --
+  *village_id : integer <<FK>>
+  *house_name : varchar(50)
+  created_at : timestamp
+}
+
+entity "Village" as village {
+  *id : integer <<PK>>
+  --
+  *region : varchar(255)
+  description : text
+}
+
+entity "Device" as device {
+  *id : integer <<PK>>
+  --
+  *type_id : integer <<FK>>
+  name : varchar(100)
+  state : integer
+  serial_number : varchar(50)
+}
+
+entity "Partner" as Partner {
+  *id : integer <<PK>>
+  --
+  *name : varchar(100)
+  description : text
+}
+
+entity "Device Type" as DeviceType {
+  *id : integer <<PK>>
+  --
+  *partner_id : integer <<FK>>
+  *name : varchar(100)
+  description : text
+}
+
+entity "Device Parameter" as DeviceParam {
+  *id : integer <<PK>>
+  --
+  *device_type_id : integer <<FK>>
+  *name : varchar(100)
+  *value : varchar(100)
+  description : text
+}
+
+entity "DeviceScenario" as DeviceScenario {
+  *scenario_id : integer <<FK>>
+  *device_id : integer <<FK>>
+}
+
+entity "Scenario" as Scenario {
+  *id : integer <<PK>>
+  --
+  *name : varchar(100)
+  description : text
+}
+
+'Связи
+user ||--o{ house : "владеет"
+house ||--o{ device : "содержит"
+village ||--o{ house : "содержит"
+device o--|| DeviceType : "имеет"
+device ||--o{ DeviceScenario : "имеет"
+Scenario ||--o{ DeviceScenario : "имеет"
+Partner ||--o{ DeviceType : "имеет"
+DeviceParam }o--|| DeviceType : "имеет"
+
+@enduml

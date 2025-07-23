@@ -1,0 +1,207 @@
+asyncapi: '3.0.0'
+info:
+  title: Smarthome System
+  version: '1.0.0'
+  description: Асинхронный API для обмена информации между микросервисами smarthome через RabbitMQ.
+defaultContentType: application/json
+
+servers:
+  rabbitmq:
+    host: rabbitmq.example.com
+    protocol: amqp
+    description: Основной RabbitMQ брокер
+    
+channels:
+  house:
+    messages:
+      HouseRegisterDeviceMessage:
+        $ref: '#/components/messages/HouseRegisterDeviceMessage'
+  scenarios:
+    messages:
+      ScenarioAddMessage:
+        $ref: '#/components/messages/ScenarioAddMessage'
+      DeviceScenariosListMessage:
+        $ref: '#/components/messages/DeviceScenariosListMessage'
+  device:
+    messages:
+      NewDeviceMessage:
+        $ref: '#/components/messages/NewDeviceMessage'
+      EditDeviceMessage:
+        $ref: '#/components/messages/EditDeviceMessage'
+  telemetry:
+    messages:
+      TelemetryMessage:
+        $ref: '#/components/messages/TelemetryMessage'
+    description: |
+      Канал для сообщений по сбору данных с датчиков
+
+operations:
+  publishTelemetry:
+    action: send
+    channel: 
+      $ref: '#/channels/telemetry'
+    summary: Публикация сообщений телеметрии
+  publishDevice:
+    action: send
+    channel: 
+      $ref: '#/channels/device'
+    summary: Публикация сообщений устройств
+  publishHouse:
+    action: send
+    channel: 
+      $ref: '#/channels/house'
+    summary: Публикация сообщений домов
+  publishScenarios:
+    action: send
+    channel: 
+      $ref: '#/channels/scenarios'
+    summary: Публикация сообщений сценариев
+
+components:
+  messages:
+    TelemetryMessage:
+      name: TelemetryMessage
+      title: Телеметрия
+      summary: Сообщение с параметрами и значением на устройстве
+      contentType: 'application/json'
+      payload:
+        $ref: '#/components/schemas/TelemetryMessagePayload'
+    HouseRegisterDeviceMessage:
+      name: HouseRegisterDeviceMessage
+      title: Добавление устройства в дом
+      summary: Сообщение с id устройства и дома
+      contentType: 'application/json'
+      payload:
+        $ref: '#/components/schemas/RegisterHouseDeviceMessagePayload'
+    ScenarioAddMessage:
+      name: ScenarioAddMessage
+      title: Добавление сценария для определенного типа устройств
+      summary: Сообщение с id устройства и названием сценария
+      contentType: 'application/json'
+      payload:
+        $ref: '#/components/schemas/DeviceScenariosAddMessagePayload'
+    DeviceScenariosListMessage:
+      name: ScenarioAddMessage
+      title: Список сценариев устройств
+      summary: Сообщение со списком сценариев для устройства
+      contentType: 'application/json'
+      payload:
+        $ref: '#/components/schemas/DeviceScenariosMessagePayload'
+    NewDeviceMessage:
+      name: NewDeviceMessage
+      title: Добавление нового типа устройства
+      summary: Сообщение с названием нового типа устройства и его списком параметров
+      contentType: 'application/json'
+      payload:
+        $ref: '#/components/schemas/NewDevicePayload'
+    EditDeviceMessage:
+      name: EditDeviceMessage
+      title: Изменение параметров для типа устройств
+      summary: Сообщение с изменением имени или параметров устройства по id типа устройства
+      contentType: 'application/json'
+      payload:
+        $ref: '#/components/schemas/EditDeviceMessagePayload'
+
+  schemas:
+    DevicePropPayload:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Название свойства устройства
+        value:
+          type: string
+          description: Значение свойства
+    ScenarioPayload:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID сценария
+        name:
+          type: string
+          description: Имя сценария
+    UpdateDeviceParamPayload:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ID параметра устройства
+        operation:
+          type: string
+          description: тип операции
+          enum: [add, delete, replace]
+        name:
+          type: string
+          description: Новое имя для параметра
+        value:
+          type: string
+          description: Новое значение для параметра
+    NewDevicePayload:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Название устройства
+        parameters:
+          items:
+            $ref: '#/components/schemas/DevicePropPayload'
+    TelemetryMessagePayload:
+      type: object
+      properties:
+        device_id:
+          type: integer
+          description: ID устройства
+        house_id:
+          type: integer
+          description: ID дома
+        timestamp:
+          type: string
+          format: date-time
+          description: Дата и время сообщения
+        device_props:
+          type: array
+          items:
+            $ref: '#/components/schemas/DevicePropPayload'
+
+    DeviceScenariosMessagePayload:
+      type: object
+      properties:
+        device_id:
+          type: integer
+          description: ID устройства
+        scenarios:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScenarioPayload'
+
+    DeviceScenariosAddMessagePayload:
+      type: object
+      properties:
+        device_id:
+          type: integer
+          description: ID устройства
+        scenario:
+          type: string
+
+    RegisterHouseDeviceMessagePayload:
+      type: object
+      properties:
+        device_id:
+          type: integer
+          description: ID устройства
+        house_id:
+          type: integer
+          description: ID дома
+
+    EditDeviceMessagePayload:
+      type: object
+      properties:
+        device_id:
+          type: integer
+          description: ID устройства
+        patches:
+          type: array
+          description: Список изменений
+          items:
+            $ref: '#/components/schemas/UpdateDeviceParamPayload'

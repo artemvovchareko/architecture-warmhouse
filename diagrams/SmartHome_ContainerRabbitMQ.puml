@@ -1,0 +1,66 @@
+@startuml
+title SmartHome Container Diagram (with Message Broker)
+
+top to bottom direction
+
+!include ./C4_Component.puml
+
+Person(user, "Пользователь", "Пользователь системы Умный дом, взаимодействующий с системой через веб-интерфейс")
+
+System_Boundary(SmartHomeSystem, "SmartHome System") {
+  Container(spa, "Single-Page Application", "React, TypeScript", "Интерфейс управления системой\n• Визуализация данных\n• Управление устройствами\n• Настройка сценариев")
+
+  Container(gateway, "API Gateway", "Kong, Node.js", "• Единая точка входа\n• Маршрутизация запросов\n• Балансировка нагрузки\n• Кеширование")
+
+  Container(message_broker, "Message Broker", "RabbitMQ/Kafka", "Асинхронная коммуникация между сервисами\n• Очереди событий\n• Pub/Sub")
+
+Boundary(DeviceManagement, "Домен: Управление устройствами") {
+    Container(device_reg, "Device Registry", "", "Регистрация новых устройств")
+    Container(device_config, "Device Config", "", "• Управление параметрами\n• Конфигурация профилей\n• Настройка режимов")
+    Container(device_automation, "Automation Engine", "", "Управление сценариями")
+    Container(device_logging, "Device logging", "Go", "Журналирование действий")
+}
+
+Boundary(UserManagement, "Домен: Управление пользователями") {
+    Container(auth_service, "Auth Service", "", "• Регистрация\n• Аутентификация\n• Сессии")
+    Container(user_profile, "Profile Service", "", "Управление профилями")
+}
+
+Boundary(DeviceMonitoring, "Домен: Мониторинг устройств") {
+    Container(telemetry, "Telemetry Service", "", "Сбор метрик")
+    Container(analytics, "Analytics Engine", "", "Аналитика устройств")
+}
+
+  ContainerDb(database, "Database", "PostgreSQL", "Хранит: \n- Пользовательские данные \n- Состояние устройств \n- Исторические данные датчиков \n- Конфигурации автоматизаций\n- Логи")
+}
+
+System_Ext(device_apis, "API Устройств", "Внешние API устройств")
+
+Rel(user, spa, "Взаимодействует с", "HTTPS\n(просмотр состояния, управление устройствами)")
+Rel(spa, gateway, "Вызывает", "HTTPS REST\n(аутентификация, запрос данных)")
+Rel(gateway, auth_service, "Аутентификация", "JWT")
+Rel(gateway, user_profile, "Данные профиля", "REST")
+
+Rel(gateway, message_broker, "Публикует события", "AMQP/Protobuf")
+Rel(message_broker, device_reg, "Подписывается на события", "Device.*")
+Rel(message_broker, device_config, "Подписывается на события", "Config.*")
+Rel(message_broker, device_automation, "Подписывается на события", "Automation.*")
+Rel(message_broker, device_logging, "Подписывается на все события", "#")
+
+Rel(telemetry, message_broker, "Публикует метрики", "Telemetry.*")
+Rel(message_broker, analytics, "Подписывается на метрики", "Telemetry.*")
+
+Rel(device_config, device_apis, "Синхронизация", "HTTPS")
+Rel(telemetry, device_apis, "Делает запросы к", "HTTPS\n(получение данных)")
+
+Rel(device_reg, database, "Читает/записывает", "SQL")
+Rel(device_config, database, "Читает/записывает", "SQL")
+Rel(device_automation, database, "Читает/записывает", "SQL")
+Rel(device_logging, database, "Читает/записывает", "SQL")
+Rel(auth_service, database, "Читает/записывает", "SQL")
+Rel(user_profile, database, "Читает/записывает", "SQL")
+Rel(analytics, database, "читает", "SQL")
+Rel(telemetry, database, "записывает", "SQL")
+
+Rel(device_config, message_broker, "Публикует события изменений", "Config.Updated")
+@enduml
