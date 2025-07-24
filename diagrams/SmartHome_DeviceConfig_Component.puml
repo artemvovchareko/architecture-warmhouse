@@ -1,0 +1,25 @@
+@startuml
+!include ./C4_Component.puml
+
+title Component diagram for SmartHome System - Device Config Service
+
+Container(spa, "Single-Page Application", "React, TypeScript", "Интерфейс управления системой\n• Визуализация данных\n• Управление устройствами\n• Настройка сценариев")
+
+ContainerDb(database, "Database", "PostgreSQL", "Хранит: \n- Пользовательские данные \n- Состояние устройств \n- Исторические данные датчиков \n- Конфигурации автоматизаций\n- Логи")
+
+Container_Boundary(DeviceConfig, "Конфигурация устройств") {
+    Component(config_api, "Configuration API", "", "• REST endpoints\n• Обработка ошибок")
+
+    Component(logger, "Audit Logger", "", "Журналирование действий")
+}
+
+System_Ext(device_apis, "API Устройств", "Внешние API устройств")
+
+Rel(spa, config_api, "Вызывает API", "HTTPS/REST JSON")
+Rel(config_api, device_apis, "Вызывает api устройства", "REST")
+
+Rel(config_api, database, "Записывает текущие значения", "SQL")
+Rel(config_api, logger, "Логирует события", "REST")
+Rel(logger, database, "Записывает события", "SQL")
+
+@enduml

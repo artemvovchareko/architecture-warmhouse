@@ -1,0 +1,45 @@
+@startuml
+title Device Configuration - Class Diagram
+
+
+class Device {
+  +Integer id
+  +String serial_number
+  +String name
+  +String state
+  +void applyConfig(config: DeviceConfig)
+}
+
+class DeviceType {
+  +Integer id
+  +String name
+  +String description
+}
+
+
+class DeviceConfig {
+  +Map<String, Parameter> parameters
+}
+
+class Parameter {
+  +Integer id
+  +String name
+  +String value
+  +String description
+}
+
+
+class Logger {
+  +void log(config: DeviceConfig)
+}
+
+
+Device "1" *-- "1" DeviceConfig : contains
+Device "1" o-- "1" DeviceType : type_id
+DeviceConfig "1" *-- "*" Parameter : has
+DeviceType "1" o-- "1" DeviceConfig : defaultConfig
+Device ..> Logger : uses
+Logger ..> DeviceConfig : uses
+
+
+@enduml

@@ -1,0 +1,16 @@
+@startuml
+title Current System Context Diagram
+
+top to bottom direction
+
+!include ./C4_Component.puml
+
+Person(user, "Пользователь", "Пользователь системы, который управляет отоплением своего дома")
+System(WarmhouseSystem, "Умный дом", "Система, управляющая отоплением в домах")
+
+System_Ext(api, "API устройств", "Внешний API управления отопительными системами и получения данных о температуре")
+
+Rel(user, WarmhouseSystem, "Uses the system")
+Rel(WarmhouseSystem,api,"Fetches heating systems data")
+
+@enduml
