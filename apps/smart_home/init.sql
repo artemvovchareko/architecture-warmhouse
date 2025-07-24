@@ -7,6 +7,7 @@ BEGIN
 END
 $$;
 
+\c smarthome;
 
 -- Create the sensors table
 CREATE TABLE IF NOT EXISTS sensors (
