@@ -4,7 +4,7 @@ import { Sensor } from "./entity/Sensor";
 const AppDataSource = new DataSource({
   type: "postgres",
   host: "postgres",
-  port: 5432,
+  port: Number(process.env.DB_PORT),
   username: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
@@ -13,6 +13,6 @@ const AppDataSource = new DataSource({
   entities: [Sensor],
   subscribers: [],
   migrations: [],
-})
+});
 
 export const dataSource = AppDataSource;

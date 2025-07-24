@@ -65,7 +65,7 @@
 
 ### 5. Визуализация контекста системы — диаграмма С4
 
-[Диаграмма контекста текущей системы](./diagramms/images/Current_System_Context.png)
+[Диаграмма контекста текущей системы](./diagrams/images/Current_System_Context.png)
 
 # Задание 2. Проектирование микросервисной архитектуры
 
@@ -73,23 +73,23 @@
 
 **Диаграмма контейнеров (Containers)**
 
-[Диаграмма контейнеров](./diagramms/images/SmartHome_ContainerRabbitMQ.png)
+[Диаграмма контейнеров](./diagrams/images/SmartHome_ContainerRabbitMQ.png)
 
 **Диаграмма компонентов (Components)**
 
-[Диаграмма компонента регистрации устройства](./diagramms/images/SmartHome_DeviceRegistry_Component.png)
+[Диаграмма компонента регистрации устройства](./diagrams/images/SmartHome_DeviceRegistry_Component.png)
 
-[Диаграмма компонента настройки устройства](./diagramms/images/SmartHome_DeviceConfig_Component.png)
+[Диаграмма компонента настройки устройства](./diagrams/images/SmartHome_DeviceConfig_Component.png)
 
 **Диаграмма кода (Code)**
 
-[Диаграмма кода](./diagramms/images/SmartHome_DeviceParams_Code.png)
+[Диаграмма кода](./diagrams/images/SmartHome_DeviceParams_Code.png)
 
 # Задание 3. Разработка ER-диаграммы
 
 Добавьте сюда ER-диаграмму. Она должна отражать ключевые сущности системы, их атрибуты и тип связей между ними.
 
-[ER-диаграмма](./diagramms/images/ER-diagram.png)
+[ER-диаграмма](./diagrams/images/ER_diagram.png)
 
 # Задание 4. Создание и документирование API
 
